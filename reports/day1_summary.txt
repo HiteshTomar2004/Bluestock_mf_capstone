@@ -1,0 +1,27 @@
+Day 1 Summary - Data Ingestion and Initial Validation
+
+-  All 10 provided CSV datasets were successfully loaded using Pandas. 
+   The datasets cover fund metadata, historical NAV values, AUM by fund house, monthly SIP inflows, category-wise inflows, industry folio counts, scheme performance metrics, investor transactions, portfolio holdings, and benchmark index values.
+
+-  The initial dataset inspection showed that most files loaded correctly, with expected shapes, readable column names, and suitable data types. The largest datasets were nav_history with 46,000 rows, investor_transactions with 32,778 rows, and benchmark_indices with 8,050 rows. 
+   No major structural issues were found in the CSV files.
+
+-  One anomaly was found in monthly_sip_inflows, where yoy_growth_pct had 12 missing values. This is likely expected because year-on-year growth cannot be calculated for the first 12 months of available data.
+   Date-related columns are currently stored as string values and may require conversion to datetime format during subsequent ETL stages.
+   No major duplicate records or structural inconsistencies were identified during initial inspection.
+
+-  Fund master exploration showed that the dataset contains 40 mutual fund schemes across 10 fund houses. The fund houses include SBI Mutual Fund, HDFC Mutual Fund, ICICI Prudential MF, Nippon India MF, Kotak Mahindra MF, Axis Mutual Fund, Aditya Birla Sun Life MF, UTI Mutual Fund, Mirae Asset MF, and DSP Mutual Fund.
+
+-  The schemes are grouped into 2 broad categories: Equity and Debt. There are 12 sub-categories: Large Cap, Small Cap, Gilt, Mid Cap, Short Duration, Value, Liquid, Index/ETF, Flexi Cap, Index, Large & Mid Cap, and ELSS. 
+   The dataset includes 5 risk grades: Low, Moderate, Moderately High, High, and Very High.
+
+-  AMFI scheme codes are numeric identifiers assigned to mutual fund schemes. They are used to uniquely identify schemes and connect scheme-level metadata with historical NAV data. 
+   Validation confirmed that all 40 AMFI codes present in fund_master also exist in nav_history. This means there are no missing scheme mappings between these two local datasets.
+
+-  Live NAV data was also fetched from mfapi.in for the requested scheme codes. The API calls were successful, JSON responses were parsed, and the NAV data was saved as raw CSV files. 
+   Each API response contained scheme metadata and historical NAV records with date and NAV values.
+
+
+However, the live API metadata revealed a data quality issue in the provided scheme-code mapping. Several scheme codes did not match the expected scheme names. For example, code 125497 returned SBI Small Cap Fund instead of HDFC Top 100 Direct, and code 119551 returned an Aditya Birla Sun Life debt fund instead of SBI Bluechip. Nippon Large Cap with code 118632 appeared to match correctly.
+
+Overall, the local CSV datasets are suitable for further analysis. The main issue to note is that external mfapi.in scheme-code mappings should be verified before using the fetched live NAV files in final analysis.
