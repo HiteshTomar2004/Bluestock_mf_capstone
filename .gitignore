@@ -1,0 +1,11 @@
+venv
+
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+bluestock_mf_db
+
+
